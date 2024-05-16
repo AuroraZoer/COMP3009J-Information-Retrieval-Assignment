@@ -83,6 +83,7 @@ def evaluation(qrels: dict, results: dict) -> tuple:
         relevant = qrels[qID]
         retrieved = results[qID]
         rel = list(doc for doc, rel in relevant.items() if rel > 0)
+        irrelevant = list(doc for doc, rel in relevant.items() if rel == 0)
         ret = [docID for docID, _, _ in retrieved]
         relret = set(ret) & set(rel)
         precision += len(relret) / len(ret)
@@ -143,7 +144,7 @@ def evaluation(qrels: dict, results: dict) -> tuple:
                     # The min function is used to ensure that the number of non-relevant documents ranked higher
                     # does not exceed the total number of relevant documents, which would result in a negative bpref.
                     bpref_sum += 1 - min(non_rel_num, R) / R
-            else:
+            elif docID in irrelevant:
                 non_rel_num += 1
         # The overall bpref is calculated as the sum of the bpref scores for each relevant document,
         # divided by the total number of relevant documents.
