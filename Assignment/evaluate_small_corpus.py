@@ -79,7 +79,6 @@ def evaluation(qrels: dict, results: dict) -> tuple:
     precision_at_15 = 0
     map = 0
     ndcg_at_15 = 0
-    bpref = 0
     for qID in qrels:
         relevant = qrels[qID]
         retrieved = results[qID]
@@ -132,22 +131,7 @@ def evaluation(qrels: dict, results: dict) -> tuple:
             NDCG.append(DCG[i] / IDCG[i])
         ndcg_at_15 += NDCG[14]
 
-        # bpref
-        R = len(rel)
-        non_rel_num = 0  # number of non-relevant documents
-        bpref_sum = 0  # sum of bpref scores
-        for docID in ret:
-            # stop when the number of non-relevant documents is higher than the number of relevant documents
-            if non_rel_num >= R:
-                break
-            # record if the document is non-relevant
-            if docID not in rel:
-                non_rel_num += 1
-            # add to bpref_sum if the document is relevant
-            else:
-                bpref_sum += 1 - non_rel_num / R
-        bpref += bpref_sum / R if R != 0 else 0
-    return precision, recall, r_precision, precision_at_15, ndcg_at_15, map, bpref
+    return precision, recall, r_precision, precision_at_15, ndcg_at_15, map
 
 
 if __name__ == '__main__':
@@ -157,7 +141,7 @@ if __name__ == '__main__':
     QRELS_PATH = os.path.join(args.p, 'files/qrels.txt')
     qrels = read_qrels(QRELS_PATH)
     results = load_results()
-    precision, recall, r_precision, precision_at_15, ndcg_at_15, map, bpref = evaluation(qrels, results)
+    precision, recall, r_precision, precision_at_15, ndcg_at_15, map = evaluation(qrels, results)
     print(f'Evaluation results:')
     print("Precision:   {:.3f}".format(precision / len(qrels)))
     print("Recall:      {:.3f}".format(recall / len(qrels)))
@@ -165,4 +149,3 @@ if __name__ == '__main__':
     print("P@15:        {:.3f}".format(precision_at_15 / len(qrels)))
     print("NDCG@15:     {:.3f}".format(ndcg_at_15 / len(qrels)))
     print("MAP:         {:.3f}".format(map / len(qrels)))
-    print("bpref:       {:.3f}".format(bpref / len(qrels)))
