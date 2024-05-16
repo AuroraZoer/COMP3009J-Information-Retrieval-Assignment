@@ -1,12 +1,10 @@
 # 21207295 Yiran Zhao
-
+import sys
 import argparse
 import logging
 import os
 import re
 import string
-
-from files import porter
 
 DOCUMENT_PATH = './documents'
 STOPWORDS_PATH = './files/stopwords.txt'
@@ -169,6 +167,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     args = get_args()
     logging.info(f'Path to comp3009j-corpus-large: {args.p}')
+    sys.path.append(os.path.dirname(args.p))
+    from files import porter
     DOCUMENT_PATH = os.path.join(args.p, 'documents')
     STOPWORDS_PATH = os.path.join(args.p, 'files/stopwords.txt')
     documents = read_documents(DOCUMENT_PATH)

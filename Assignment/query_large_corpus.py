@@ -1,12 +1,11 @@
 # 21207295 Yiran Zhao
-
+import sys
 import argparse
 import logging
 import math
 import os
 import string
 
-from files import porter
 
 STOPWORDS_PATH = './files/stopwords.txt'
 QUERY_PATH = './files/queries.txt'
@@ -42,7 +41,7 @@ def load_index() -> dict:
     Load the BM25 index from index file
     :return: dictionary of BM25 index
     """
-    logging.info(f'Loading BM25 index from file {UCD_NUMBER}.index, please wait.')
+    logging.info(f'Loading BM25 index from file {UCD_NUMBER}-large.index, please wait.')
     index = {}
     with open(f'{UCD_NUMBER}-large.index', encoding='utf-8', mode='r') as f:
         for line in f:
@@ -209,7 +208,7 @@ def save_results(score: dict[str, dict[str, float]]) -> None:
             # for i, (docID, score) in enumerate(scores):
             #     if score > 0:
             #         f.write(f'{qID} {docID} {i + 41} {score}\n')
-    logging.info(f'Successfully saved index to {UCD_NUMBER}.results')
+    logging.info(f'Successfully saved index to {UCD_NUMBER}-large.results')
 
 
 if __name__ == '__main__':
@@ -217,6 +216,8 @@ if __name__ == '__main__':
     args = get_args()
     logging.info(f'Path to comp3009j-corpus-large: {args.p}')
     logging.info(f'Mode: {args.m}')
+    sys.path.append(os.path.dirname(args.p))
+    from files import porter
     QUERY_PATH = os.path.join(args.p, 'files/queries.txt')
     STOPWORDS_PATH = os.path.join(args.p, 'files/stopwords.txt')
     stopwords = read_stopwords(STOPWORDS_PATH)
