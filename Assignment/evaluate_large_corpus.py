@@ -82,7 +82,7 @@ def evaluation(qrels: dict, results: dict) -> tuple:
     for qID in qrels:
         relevant = qrels[qID]
         retrieved = results[qID]
-        rel = list(relevant.keys())
+        rel = list(doc for doc, rel in relevant.items() if rel > 0)
         ret = [docID for docID, _, _ in retrieved]
         relret = set(ret) & set(rel)
         precision += len(relret) / len(ret)
@@ -136,16 +136,20 @@ def evaluation(qrels: dict, results: dict) -> tuple:
         non_rel_num = 0  # number of non-relevant documents
         bpref_sum = 0  # sum of bpref scores
         for docID in ret:
-            # stop when the number of non-relevant documents is higher than the number of relevant documents
-            if non_rel_num >= R:
-                break
-            # record if the document is non-relevant
-            if docID not in rel:
-                non_rel_num += 1
-            # add to bpref_sum if the document is relevant
+            if docID in rel:
+                if R > 0:
+                    # Add to the bpref sum. The bpref for each relevant document is calculated as
+                    # 1 - (number of non-relevant documents ranked higher / total number of relevant documents).
+                    # The min function is used to ensure that the number of non-relevant documents ranked higher
+                    # does not exceed the total number of relevant documents, which would result in a negative bpref.
+                    bpref_sum += 1 - min(non_rel_num, R) / R
             else:
-                bpref_sum += 1 - non_rel_num / R
-        bpref += bpref_sum / R if R != 0 else 0
+                non_rel_num += 1
+        # The overall bpref is calculated as the sum of the bpref scores for each relevant document,
+        # divided by the total number of relevant documents.
+        # If there are no relevant documents (R = 0), the bpref is undefined, so we check if R > 0 before dividing.
+        bpref += bpref_sum / R if R > 0 else 0
+
     return precision, recall, r_precision, precision_at_15, ndcg_at_15, map, bpref
 
 
