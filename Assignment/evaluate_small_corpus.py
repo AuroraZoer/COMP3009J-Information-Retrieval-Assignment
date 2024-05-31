@@ -4,6 +4,7 @@ import argparse
 import logging
 import math
 import os
+import time
 
 QRELS_PATH = './files/qrels.txt'
 UCD_NUMBER = '21207295'
@@ -135,6 +136,7 @@ def evaluation(qrels: dict, results: dict) -> tuple:
 
 
 if __name__ == '__main__':
+    start_time = time.process_time()
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     args = get_args()
     logging.info(f'Path to comp3009j-corpus-small: {args.p}')
@@ -149,3 +151,5 @@ if __name__ == '__main__':
     print("P@15:        {:.3f}".format(precision_at_15 / len(qrels)))
     print("NDCG@15:     {:.3f}".format(ndcg_at_15 / len(qrels)))
     print("MAP:         {:.3f}".format(map / len(qrels)))
+    end_time = time.process_time()
+    print('Time is {} seconds'.format( end_time - start_time))

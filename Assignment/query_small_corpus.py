@@ -6,6 +6,7 @@ import logging
 import math
 import os
 import string
+import time
 
 STOPWORDS_PATH = './files/stopwords.txt'
 QUERY_PATH = './files/queries.txt'
@@ -212,6 +213,7 @@ def save_results(score: dict[str, dict[str, float]]) -> None:
 
 
 if __name__ == '__main__':
+    start_time = time.process_time()
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     args = get_args()
     logging.info(f'Path to comp3009j-corpus-small: {args.p}')
@@ -228,3 +230,5 @@ if __name__ == '__main__':
         queries = read_queries(QUERY_PATH)
         results = automatic_mode(queries, index)
         save_results(results)
+    end_time = time.process_time()
+    print('Time is {} seconds'.format( end_time - start_time))

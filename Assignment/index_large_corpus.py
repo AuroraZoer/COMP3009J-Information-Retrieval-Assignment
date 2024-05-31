@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import string
+import time
 
 DOCUMENT_PATH = './documents'
 STOPWORDS_PATH = './files/stopwords.txt'
@@ -165,6 +166,7 @@ def save_index(index: dict) -> None:
 
 
 if __name__ == '__main__':
+    start_time = time.process_time()
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     args = get_args()
     logging.info(f'Path to comp3009j-corpus-large: {args.p}')
@@ -177,3 +179,5 @@ if __name__ == '__main__':
     docs_terms_dict = process_document(documents, stopwords)
     index = create_index(docs_terms_dict)
     save_index(index)
+    end_time = time.process_time()
+    print('Time is {} seconds'.format( end_time - start_time))
